@@ -157,14 +157,14 @@ module.exports = (_env, args) => {
            package as entrypoints, but this leads to a lot of problems because
            the files have the structure lunr.[language].js, which some Webpack
            plugins will complain about. For this reason we only minify */
-        // {
-        //   context: path.resolve(__dirname, "node_modules/lunr-languages"),
-        //   to: "assets/javascripts/lunr",
-        //   from: "*.js",
-        //   transform: content => {
-        //     return uglify.minify(content.toString()).code
-        //   }
-        // },
+        {
+          context: path.resolve(__dirname, "node_modules/lunr-languages"),
+          to: "assets/javascripts/lunr",
+          from: "*.js",
+          transform: content => {
+            return uglify.minify(content.toString()).code
+          }
+        },
 
         /* Copy web font files */
         {

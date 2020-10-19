@@ -284,7 +284,15 @@ function initialize(config) { // eslint-disable-line func-style
     new Material.Event.Listener("[data-md-component=query]", [
       "focus", "keyup", "change"
     ], new Material.Search.Result("[data-md-component=result]", () => {
-      return '';
+      return fetch(`${config.url.base}/search/search_index.json`, {
+        credentials: "same-origin"
+      }).then(response => response.json())
+        .then(data => {
+          return data.docs.map(doc => {
+            doc.location = `${config.url.base}/${doc.location}`
+            return doc
+          })
+        })
     })).listen()
 
     /* Listener: focus input after form reset */
@@ -333,7 +341,7 @@ function initialize(config) { // eslint-disable-line func-style
 
       /* Skip editable elements */
       if (document.activeElement instanceof HTMLElement &&
-          document.activeElement.isContentEditable)
+        document.activeElement.isContentEditable)
         return
 
       /* Abort if meta key (macOS) or ctrl key (Windows) is pressed */
@@ -361,18 +369,18 @@ function initialize(config) { // eslint-disable-line func-style
             }
           }
 
-        /* Escape or Tab: close search */
+          /* Escape or Tab: close search */
         } else if (ev.keyCode === 9 || ev.keyCode === 27) {
           toggle.checked = false
           toggle.dispatchEvent(new CustomEvent("change"))
           query.blur()
 
-        /* Horizontal arrows and backspace: focus input */
+          /* Horizontal arrows and backspace: focus input */
         } else if ([8, 37, 39].indexOf(ev.keyCode) !== -1) {
           if (query !== document.activeElement)
             query.focus()
 
-        /* Vertical arrows: select previous or next search result */
+          /* Vertical arrows: select previous or next search result */
         } else if ([38, 40].indexOf(ev.keyCode) !== -1) {
           const key = ev.keyCode
 
@@ -409,12 +417,12 @@ function initialize(config) { // eslint-disable-line func-style
           return false
         }
 
-      /* Search is closed and we're not inside a form */
+        /* Search is closed and we're not inside a form */
       } else if (document.activeElement && !document.activeElement.form) {
 
         /* Fixes #1026: search grabs focus for non-form input elements */
         if (document.activeElement.tagName === "TEXTAREA" ||
-            document.activeElement.tagName === "INPUT")
+          document.activeElement.tagName === "INPUT")
           return
 
         /* F/S: Open search if not in input field */
@@ -491,7 +499,7 @@ function initialize(config) { // eslint-disable-line func-style
       default: return Promise.resolve([])
     }
 
-  /* Render repository information */
+    /* Render repository information */
   })().then(facts => {
     const sources = document.querySelectorAll("[data-md-source]")
     Array.prototype.forEach.call(sources, source => {
